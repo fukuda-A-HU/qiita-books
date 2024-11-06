@@ -10,11 +10,133 @@ slide: false
 ignorePublish: false
 ---
 
-　この記事は、ARFoundationの最新ドキュメントをGoogle翻訳した内容を読み解くためのものです。和訳と、自分が引っかかったところを解説しています。
+　この記事は、ARFoundationの最新ドキュメントをGoogle翻訳した内容を読み解くためのものです。和訳と、自分が引っかかったところを追記したり解説しています。
+
+目次
+
+- [Introduction](#introduction)
+  - [必要なパッケージ](#必要なパッケージ)
+  - [機能](#機能)
+  - [プラットフォームサポート](#プラットフォームサポート)
+- [プロジェクトのセットアップ](#プロジェクトのセットアップ)
+  - [ARFoundationをインストールする](#arfoundationをインストールする)
+    - [必要なパッケージ](#必要なパッケージ-1)
+  - [ユニバーサルレンダーパイプライン](#ユニバーサルレンダーパイプライン)
+  - [シーン設定](#シーン設定)
+- [Architecture](#architecture)
+  - [Subsystem](#subsystem)
+    - [Subsystemのライフサイクル](#subsystemのライフサイクル)
+    - [SubsystemDescriptors](#subsystemdescriptors)
+    - [TrackingSubsystem](#trackingsubsystem)
+  - [Manager](#manager)
+    - [シーンにマネージャーを追加する](#シーンにマネージャーを追加する)
+    - [マネージャーの有効化と無効化](#マネージャーの有効化と無効化)
+    - [TrackableとTrackable Manager](#trackableとtrackable-manager)
+    - [Tracking可能なものの列挙](#tracking可能なものの列挙)
+    - [Trackableなライフサイクル](#trackableなライフサイクル)
+      - [Tracking可能なものを追加する](#tracking可能なものを追加する)
+      - [Tracking可能なものを削除する](#tracking可能なものを削除する)
+      - [Tracking状態の監視](#tracking状態の監視)
+      - [Tracking可能なものを非アクティブ化する](#tracking可能なものを非アクティブ化する)
+      - [Tracking可能なものを視覚化する](#tracking可能なものを視覚化する)
+    - [Tracking可能なゲームオブジェクトの設定](#tracking可能なゲームオブジェクトの設定)
+  - [拡張](#拡張)
+- [Features](#features)
+  - [Session](#session)
+    - [AR Session Component](#ar-session-component)
+    - [デバイスのサポートを確認する](#デバイスのサポートを確認する)
+    - [Sessionの状態](#sessionの状態)
+    - [AR Input Manager](#ar-input-manager)
+  - [Devicetracking](#devicetracking)
+    - [Device Target](#device-target)
+  - [Camera](#camera)
+    - [カメラプラットフォームのサポート](#カメラプラットフォームのサポート)
+    - [Camera Components](#camera-components)
+    - [Image Capture](#image-capture)
+      - [Image Capture](#image-capture-1)
+      - [GPUとCPUの違いを理解する](#gpuとcpuの違いを理解する)
+      - [GPU経由で画像にアクセスする](#gpu経由で画像にアクセスする)
+      - [CPU経由で画像にアクセス](#cpu経由で画像にアクセス)
+      - [同期変換](#同期変換)
+      - [非同期変換](#非同期変換)
+      - [RawImagePlane](#rawimageplane)
+    - [EXIFデータ](#exifデータ)
+    - [表示マトリックスの形式と導出](#表示マトリックスの形式と導出)
+    - [カスタム背景シェーダー](#カスタム背景シェーダー)
+      - [カスタム背景シェーダー](#カスタム背景シェーダー-1)
+      - [XR 頂点シェーダー操作](#xr-頂点シェーダー操作)
+      - [GLSLサンプルコード](#glslサンプルコード)
+      - [HLSL サンプルコード](#hlsl-サンプルコード)
+  - [Plane Detection](#plane-detection)
+    - [プラットフォームサポート](#プラットフォームサポート-1)
+      - [平面検出のサポートを確認する](#平面検出のサポートを確認する)
+      - [オプション機能](#オプション機能)
+        - [オプション機能のサポートを確認する](#オプション機能のサポートを確認する)
+    - [AR Plane Manager Component](#ar-plane-manager-component)
+      - [はじめる](#はじめる)
+      - [検出されたPlaneに応答する](#検出されたplaneに応答する)
+      - [シーン内の平面を視覚化する](#シーン内の平面を視覚化する)
+      - [AR Plane Debug Visualizer](#ar-plane-debug-visualizer)
+      - [Custom Plane Visualizer](#custom-plane-visualizer)
+    - [AR Plane Component](#ar-plane-component)
+  - [Bounding Box Detection](#bounding-box-detection)
+    - [プラットフォームサポート](#プラットフォームサポート-2)
+    - [AR Bounding Box Manager Component](#ar-bounding-box-manager-component)
+    - [AR Bounding Box Component](#ar-bounding-box-component)
+    - [Image Tracking](#image-tracking)
+      - [AR Image Manager Component](#ar-image-manager-component)
+    - [Object Tracking](#object-tracking)
+      - [AR Tracking Manager Component](#ar-tracking-manager-component)
+  - [Face Tracking](#face-tracking)
+    - [プラットフォームのサポート](#プラットフォームのサポート)
+      - [顔Trackingのサポートを確認する](#顔trackingのサポートを確認する)
+      - [オプション機能](#オプション機能-1)
+        - [オプション機能プラットフォームサポート](#オプション機能プラットフォームサポート)
+        - [オプション機能のサポートを確認する](#オプション機能のサポートを確認する-1)
+    - [AR Face Manager Component](#ar-face-manager-component)
+    - [AR Face Component](#ar-face-component)
+  - [BodyTracking](#bodytracking)
+  - [Point clouds](#point-clouds)
+    - [AR Point Cloud manager](#ar-point-cloud-manager)
+      - [特徴点のプロパティ](#特徴点のプロパティ)
+        - [位置](#位置)
+        - [識別子](#識別子)
+        - [信頼値](#信頼値)
+  - [Raycast](#raycast)
+    - [プラットフォームサポート](#プラットフォームサポート-3)
+    - [AR Raycast Manager Component](#ar-raycast-manager-component)
+    - [単一光線の投射](#単一光線の投射)
+    - [Trackingされたレイキャスト](#trackingされたレイキャスト)
+    - [AR Raycast Component](#ar-raycast-component)
+  - [Anchor](#anchor)
+    - [Introduction](#introduction-1)
+    - [プラットフォームのサポート](#プラットフォームのサポート-1)
+    - [AR Anchor Manager Component](#ar-anchor-manager-component)
+    - [AR Anchor Component](#ar-anchor-component)
+    - [永続的なアンカー](#永続的なアンカー)
+  - [Meshing](#meshing)
+    - [AR Mesh Manager Component](#ar-mesh-manager-component)
+  - [Environmentプローブ](#environmentプローブ)
+  - [Occulusion](#occulusion)
+    - [プラットフォームのサポート](#プラットフォームのサポート-2)
+    - [AR Occlusion Manager Component](#ar-occlusion-manager-component)
+  - [Participant](#participant)
+    - [AR Participant Manager Component](#ar-participant-manager-component)
+- [XR Simulation](#xr-simulation)
+  - [Introduction](#introduction-2)
+  - [はじめる](#はじめる-1)
+  - [Features](#features-1)
+  - [Dummy Anchor](#dummy-anchor)
+  - [XR Environment View](#xr-environment-view)
+  - [XR Simulation Project Settings](#xr-simulation-project-settings)
+  - [XR Simulation Environment](#xr-simulation-environment)
+- [ARシーンのデバック](#arシーンのデバック)
+  - [AR Foundaiton DebugMenu](#ar-foundaiton-debugmenu)
+- [プロバイダーを実装する](#プロバイダーを実装する)
+
 
 # Introduction
 
-（和訳）
 　AR Foundation を使用すると、Unity でマルチプラットフォームの拡張現実 (AR) アプリを作成できます。AR Foundation プロジェクトでは、対応するマネージャー コンポーネントをシーンに追加することで、有効にする AR 機能を選択します。AR デバイスでアプリをビルドして実行すると、AR Foundation はプラットフォームのネイティブ AR SDK を使用してこれらの機能を有効にするため、一度作成すれば、世界の主要な AR プラットフォームにデプロイできます。
 
 （メモ）
@@ -22,7 +144,6 @@ ignorePublish: false
 
 ## 必要なパッケージ
 
-（和訳）
 　AR Foundation パッケージには AR 機能のインターフェースが含まれていますが、それ自体は機能を実装していません。ターゲット プラットフォームで AR Foundation を使用するには、そのプラットフォーム用の別のプロバイダー プラグインパッケージも必要です。
 　Unity は、次のプロバイダー プラグインを公式にサポートしています。
 - Android 上のGoogle ARCore XR プラグイン
@@ -113,7 +234,7 @@ AR アプリを開発するときは、AR Foundation のドキュメントと、
 古いエディターのバージョン
 　プロジェクトで古いバージョンのエディターが必要な場合は、サポートされている次のバージョンの AR Foundation を使用できます。
 
-## 必要なパッケージ
+### 必要なパッケージ
 　
 　AR Foundation パッケージには AR 機能のインターフェースが含まれていますが、AR 機能自体は実装されていません。ターゲット プラットフォームで AR Foundation を使用するには、そのプラットフォーム用の別のプロバイダー プラグインパッケージも必要です。プロバイダー プラグインは、特定のプラットフォーム用の AR Foundation 機能の実装を含む別のパッケージです。
 
@@ -139,7 +260,7 @@ Apple ARKit XR プラグイン	プロジェクト構成
 サードパーティのプラグイン
 AR Foundation 用のカスタム プロバイダー プラグインを開発することができます。サードパーティのプロバイダー プラグインを使用している場合は、インストールと使用に関する詳細な手順については、プラグインのドキュメントを参照してください。
 
-## URP
+## ユニバーサルレンダーパイプライン
 
 AR Foundation は、Universal Render Pipeline (URP) バージョン 7.0.0 以降をサポートしています。URPへの切り替えの詳細については、 URP の開始ページを参照してください。
 
@@ -188,7 +309,6 @@ ARSessionとXR Originを作成する
 
 AR Sessionと XR Origin の両方をシーンに追加すると、階層ウィンドウは次のように表示され、「AR Session」と「XR Origin」という名前のゲームオブジェクトが表示されます。XR Origin には「Camera Offset」という名前の子ゲームオブジェクトがあり、Camera Offset には「Main Camera」という名前の子ゲームオブジェクトがあります。
 
-ARSessionとXR Originを含むシーングラフ
 ARSessionとXR Originを含むシーングラフ
 
 これはデフォルトのシーン設定ですが、プロジェクトのニーズに応じてゲームオブジェクトの名前を変更したり、親を変更したりできます。
@@ -283,8 +403,6 @@ AR Foundation は、Subsystemを使用して AR 機能を定義します。マ�
 まず、階層ウィンドウで、追加するマネージャー コンポーネントの適切な GameObject を選択します。
 インスペクターの「コンポーネントの追加」ボタンをクリックします。
 最後に、追加するマネージャー コンポーネントを検索して選択します。
-AR Plane Managerコンポーネントの追加
-AR Plane Managerコンポーネントの追加
 
 マネージャーは、新しいTracking可能オブジェクトを XR Origin の子としてシーンに追加し、Tracking可能オブジェクトの位置、回転、スケールを XR Origin の位置、回転、スケールに相対的に定義します。
 
@@ -409,7 +527,7 @@ Tracking画像プレハブフィールドを備えた AR Tracking画像マネー
 
 インスタンス化された GameObject にARTrackableは、そのタイプのTracking可能オブジェクトのコンポーネントが必要です。したがって、Prefab が の場合null、マネージャーは空の GameObject を作成し、関連するARTrackableコンポーネントのみを追加します。同様に、null 以外の Prefab に関連コンポーネントがない場合ARTrackable、マネージャーはそれを追加します。
 
-## ARFoundationの拡張
+## 拡張
 
 プロバイダー プラグイン間のプラットフォーム固有の実装の違いにより、AR Foundation は C# 経由でプラットフォーム SDK のコンテンツ全体を公開しない場合があります。代わりに、AR Foundation は、該当する場合にプラットフォーム固有の機能とデータにアクセスするためのネイティブ ポインターを提供します。たとえば、XRSessionSubsystemにはネイティブPtrプロパティがあります。
 
@@ -431,7 +549,9 @@ typedef struct UnityXRNativeSessionPtr
 
 # Features
 
-## AR Session Component
+## Session
+
+### AR Session Component
 
 ARSessionコンポーネント
 ARSessionコンポーネントは、ターゲット プラットフォームで AR を有効または無効にすることで、AR エクスペリエンスのライフサイクルを制御します。
@@ -444,7 +564,7 @@ Sessionとは、 AR のインスタンスを指します。平面検出などの
 注記
 同じシーン内の複数の AR Session コンポーネントは互いに競合する可能性があるため、Unity ではシーンに最大 1 つの AR Session コンポーネントを追加することをお勧めします。
 
-デバイスのサポートを確認する
+### デバイスのサポートを確認する
 一部のプラットフォームでは、デバイスのオペレーティング システムに AR 機能が組み込まれています。他のプラットフォームでは、AR ソフトウェアをオンデマンドでインストールできる場合もあれば、AR がまったくサポートされていない場合もあります。アプリケーションは、AR がサポートされていない場合に代替エクスペリエンスを提供できるように、AR Foundation のサポートを検出できる必要があります。
 
 「このデバイスで AR は利用できますか?」という質問では、リモート サーバーでソフトウェアの可用性を確認する必要がある可能性があるため、Check Availabilityを呼び出してAR が利用可能かどうかを確認する必要があります。
@@ -475,7 +595,7 @@ public class MyComponent {
 
 「更新の試行」をtrueに設定すると、デバイスは可能な場合は AR ソフトウェアをインストールしようとします。この機能のサポートはプラットフォームによって異なります。
 
-Session状態
+### Sessionの状態
 現在のSession状態を取得するには、ARSession. stateを使用します。また、 ARSession. state Changedイベントをサブスクライブして、状態が変更されたときにコールバックを受信することもできます。すべての可能な状態のリストについては、次の表を参照してください。
 
 Session状態	説明
@@ -493,8 +613,7 @@ ARInput Managerコンポーネントは、ワールド Trackingを有効にし�
 注記
 AR 入力マネージャー コンポーネントがないと、XROrigin はデバイスのワールド空間ポーズを取得できません。AR が正しく機能するには、AR 入力マネージャー コンポーネントが必要です。
 
-AR 入力マネージャー コンポーネント
-AR 入力マネージャー コンポーネント
+### AR Input Manager
 
 AR 入力マネージャー コンポーネントはシーン階層内の任意の場所に移動できますが、シーンごとに 1 つしか配置できません。
 
@@ -533,7 +652,9 @@ XROrigin は、AR Foundation とXR Interaction Toolkitパッケージ間で共�
 
 AR Foundation のデフォルトのXROrigin は、モバイル AR エクスペリエンス用に事前構成されています。ただし、ハンドヘルド コントローラー入力を備えた AR HMD をターゲットにする場合は、追加のXROrigin構成用にXR Interaction Toolkit をインストールできます。XROrigin構成の詳細については、完全なXR Origin コンポーネント ドキュメントを参照してください。
 
-## カメラプラットフォームのサポート
+## Camera
+
+### カメラプラットフォームのサポート
 
 AR Foundation XRCameraSubsystemは、次の表に示すように、ARCore、ARKit、Meta OpenXR、XR Simulation プラットフォームでサポートされています。
 
@@ -634,7 +755,7 @@ void CheckForOptionalFeatureSupport()
 }
 ```
 
-# Camera Components
+### Camera Components
 
 カメラ部品
 AR Foundation は、AR シーンのデバイス カメラ機能を制御すべく、ARCamera ManagerとARCamera Background という2 つの主要コンポーネントを使用します。シーンには、一度に有効にできるこれらのコンポーネントがそれぞれ最大 1 つずつ含まれている必要があります。シーンの初期設定後、XR Origin GameObject 階層のXR Origin > Camera Offset > Main Cameraに AR Camera Manager と AR Camera Background コンポーネントが見つかります。
@@ -673,26 +794,29 @@ AR カメラ背景コンポーネント
 カスタムマテリアルを使用する	「カスタム マテリアルの使用」をtrueに設定すると、指定したカスタム マテリアルをARCameraBackground使用して背景がレンダリングされます。
 カスタム素材	Use Custom Materialがtrueの場合にのみ表示されます。独自のシェーダーを使用して背景をレンダリングするには、このプロパティを設定します。AR Foundation は、デフォルトでアクティブなプロバイダー プラグインのマテリアルを使用しますが、独自のマテリアルでデフォルトを上書きできます。
 
-# 画像キャプチャ
+### Image Capture
 
-画像キャプチャ
+#### Image Capture
 次の条件が満たされている場合、アプリはデバイスのカメラで撮影された画像にアクセスできます。
 
-デバイスプラットフォームはカメラ機能をサポート
-ユーザーは必要なカメラの許可を承諾しました
-カメラ機能が有効になっている（例：ARCamera Managerがアクティブで有効になっている）
+- デバイスプラットフォームがカメラ機能をサポート
+- ユーザーが必要なカメラの許可を与えている
+- カメラ機能が有効になっている（例：ARCamera Managerがアクティブで有効になっている）
+  
 デバイスのカメラ画像にアクセスするために選択する方法は、画像をどのように処理するかによって異なります。GPU ベースまたは CPU ベースのアプローチにはトレードオフがあります。
 
-GPUとCPUの違いを理解する
+#### GPUとCPUの違いを理解する
 デバイスのカメラ画像にアクセスするには、次の 2 つの方法があります。
 
-GPU:単純に画像をレンダリングしたり、シェーダーで処理したりする場合には、GPU が最高のパフォーマンスを発揮します。
-CPU: C# スクリプトで画像のピクセル データにアクセスする場合は、CPU を使用します。これはリソースを大量に消費しますが、画像をファイルに保存したり、コンピューター ビジョン システムに渡したりするなどの操作を実行できます。
-GPU経由で画像にアクセスする
+- GPU:単純に画像をレンダリングしたり、シェーダーで処理したりする場合には、GPU が最高のパフォーマンスを発揮します。
+- CPU: C# スクリプトで画像のピクセル データにアクセスする場合は、CPU を使用します。これはリソースを大量に消費しますが、画像をファイルに保存したり、コンピューター ビジョン システムに渡したりするなどの操作を実行できます。
+ 
+#### GPU経由で画像にアクセスする
 カメラ テクスチャは通常、フレーム境界を超えて持続しない外部テクスチャです。カメラ イメージをレンダリング テクスチャにコピーして、それを保持したり、さらに処理したりすることができます。
 
 次のコードは、選択したレンダリング テクスチャへのGPU コピーまたは「ブリット」を直ちに実行するコマンド バッファーを設定します。コードは、 ClearRenderTarget を呼び出して、コピーの前にレンダリング テクスチャをクリアします。
 
+```csharp
 // Create a new command buffer
 var commandBuffer = new CommandBuffer();
 commandBuffer.name = "AR Camera Background Blit Pass";
@@ -723,7 +847,9 @@ Graphics.ExecuteCommandBuffer(commandBuffer);
 
 // Set Unity's render target back to its previous value
 Graphics.SetRenderTarget(colorBuffer, depthBuffer);
-CPU経由で画像にアクセス
+```
+
+#### CPU経由で画像にアクセス
 CPU 上のデバイス カメラ イメージにアクセスするには、まずARCamera Manager を呼び出します。最新のCpuイメージを取得して取得してくださいXRCpuImage。
 
 注記
@@ -736,13 +862,16 @@ XRCpu Image は、ネイティブ ピクセル配列を表す構造体です。�
 グレースケールまたはカラーのテクスチャフォーマットへの同期変換
 グレースケールまたはカラーへの非同期変換
 生の画像プレーン
-同期変換
+
+#### 同期変換
 をXRCpuImageグレースケールまたはカラー形式に同期的に変換するには、XRCpu Image を呼び出します。Convert :
 
+```csharp
 public void Convert(
     XRCpuImage.ConversionParams conversionParams,
     IntPtr destinationBuffer,
     int bufferLength)
+```
 このメソッドは、 をConversion Paramsで指定されたテクスチャ形式XRCpuImageに変換し、そのデータを に書き込みます。destinationBuffer
 
 TextureFormat.Alpha8やなどのグレースケール画像変換はTextureFormat.R8通常非常に高速ですが、カラー変換には CPU を集中的に使用する計算が必要になります。
@@ -755,6 +884,8 @@ XRCpuイメージを使用します。必要なサイズを取得するには、
 取得するXRCpuImage
 RGBA32カラー形式に同期して変換する
 変換したピクセルデータをテクスチャに適用する
+
+```csharp
 // Acquire an XRCpuImage
 if (!m_CameraManager.TryAcquireLatestCpuImage(out XRCpuImage image))
     return;
@@ -799,9 +930,11 @@ finally
 
 // Apply the converted pixel data to our texture
 texture.Apply();
+```
+
 AR Foundation サンプルGitHub リポジトリには、デバイスで実行できる同様の例が含まれています。
 
-非同期変換
+#### 非同期変換
 変換された画像にすぐにアクセスする必要がない場合は、非同期に変換できます。
 
 非同期変換には 3 つのステップがあります。
@@ -942,13 +1075,13 @@ void ProcessImage(
 
 デリゲートの有効期間を超えてデータを保持する必要がある場合は、コピーを作成します。NativeArray<T>.CopyFromを参照してください。
 
-生の画像プレーン
+#### RawImagePlane
 注記
-ここで言う画像「プレーン」とは、ビデオ形式で使用されるチャネルを指します。平面ではなく、とは関係ありませんARPlane。
+ここで言う画像「Plane」とは、ビデオ形式で使用されるチャネルを指します。Planeではなく、ARPlaneとは関係ありません。
 
 ほとんどのビデオ形式では、Y が輝度平面で、UV 平面に色度情報が含まれる YUV エンコード バリアントを使用します。U と V はインターリーブまたは別々の平面にすることができ、ピクセルごとまたは行ごとに追加のパディングが存在する場合があります。
 
-プラットフォーム固有の生の YUV データにアクセスする必要がある場合は、XRCpuImage.GetPlane次の例に示すメソッドを使用して各イメージの「プレーン」を取得できます。
+プラットフォーム固有の生の YUV データにアクセスする必要がある場合は、XRCpuImage.GetPlane次の例に示すメソッドを使用して各イメージの「Plane」を取得できます。
 
 ```csharp
 if (!cameraManager.TryAcquireLatestCpuImage(out XRCpuImage image))
@@ -965,31 +1098,32 @@ for (int planeIndex = 0; planeIndex < image.planeCount; ++planeIndex)
     // Do something with the data
     MyComputerVisionAlgorithm(plane.data);
 }
-```
 
 // Dispose the XRCpuImage to avoid resource leaks
 image.Dispose();
-XRCpuImage.Planeは、 を介してネイティブ メモリ バッファに直接アクセスできるようにしますNativeArray<byte>。これはネイティブ メモリへのビューを表します。 を破棄する必要はありませんNativeArray。このメモリは読み取り専用であり、 がXRCpuImage破棄されるまでそのデータが有効であると見なす必要があります。
+```
+XRCpuImage.Planeは、 NativeArray<byte>を介してNative Memory Bufferに直接アクセスできるようにします。これはネイティブ メモリへのビューを表します。 NativeArrayを破棄する必要はありません。このメモリは読み取り専用であり、 XRCpuImageが破棄されるまでそのデータが有効であると見なす必要があります。
 
-# EXIFデータ
+### EXIFデータ
 
-EXIFデータ
 サポートされている EXIF タグを確認するには、次の表を確認してください。EXIF仕様の詳細については、このリンクを参照してください。
 
-サポートされている EXIF タグ名	EXIF 2.32 仕様
-絞り値	レンズの絞り。単位は APEX (Additive System of Photographic Exposure) 値です。
-明るさ値	明るさの値。単位は APEX 値です。通常は -99.99 ～ 99.99 の範囲で指定します。
-カラースペース	色空間情報タグ (ColorSpace) は、常に色空間指定子として記録されます。通常は、PC モニターの状態やEnvironmentに基づいて色空間を定義するために sRGB (=1) が使用されます。sRGB 以外の色空間を使用する場合は、Uncalibrated (=FFFF.H) が設定されます。Uncalibrated として記録された画像データは、Flashpix に変換されるときに sRGB として扱われる場合があります。
-露出バイアス値	露出補正。単位は APEX 値です。通常は -99.99 ～ 99.99 の範囲で指定します。
-曝露時間	露出時間（秒単位）。
-F番号	F値（F値とも呼ばれる）は、レンズの焦点距離と絞り径の比率です。AdobeのカメラのF値とは何ですか?詳細については、こちらをご覧ください。
-フラッシュ	このタグは、画像が撮影されたときのフラッシュの状態を示します。ビット 0 はフラッシュの発光状態、ビット 1 と 2 はフラッシュの復帰状態、ビット 3 と 4 はフラッシュ モード、ビット 5 はフラッシュ機能の有無、ビット 6 は「赤目」モードを示します。
-焦点距離	レンズの実際の焦点距離（mm）。35 mm フィルム カメラの焦点距離への変換は行われません。
-写真感度	このタグは、画像を撮影した際のカメラまたは入力デバイスの感度を示します。具体的には、ISO 12232 で規定されているパラメータである標準出力感度 (SOS)、推奨露出指数 (REI)、ISO 感度のいずれかの値を示します。したがって、SensitivityType タグで指定されるパラメータに対応するタグが記録されている場合、そのタグの値とこの PhotographicSensitivity タグの値は同一となります。ただし、値が 65535 (SHORT の最大値) 以上の場合は、タグの値は 65535 となります。このタグを記録する場合は、SensitivityType タグも記録してください。また、Count = Any の場合、このタグを記録する場合は 1 カウントのみを使用してください。なお、このタグは、この規格のバージョン 2.21 までは「ISOSpeedRatings」と呼ばれていました。
-測光モード	測光モード。デフォルト = 0。0 = 不明。1 = 平均。2 = 中央加重平均。3 = スポット。4 = マルチスポット。5 = パターン。6 = 部分的。255 = その他。その他 = 予約済み。
-シャッタースピード値	シャッタースピード。単位はAPEX値です。
+| サポートされている EXIF タグ名 | EXIF 2.32 仕様                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 絞り値                         | レンズの絞り。単位は APEX (Additive System of Photographic Exposure) 値です。                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 明るさ値                       | 明るさの値。単位は APEX 値です。通常は -99.99 ～ 99.99 の範囲で指定します。                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| カラースペース                 | 色空間情報タグ (ColorSpace) は、常に色空間指定子として記録されます。通常は、PC モニターの状態やEnvironmentに基づいて色空間を定義するために sRGB (=1) が使用されます。sRGB 以外の色空間を使用する場合は、Uncalibrated (=FFFF.H) が設定されます。Uncalibrated として記録された画像データは、Flashpix に変換されるときに sRGB として扱われる場合があります。                                           |
+| 露出バイアス値                 | 露出補正。単位は APEX 値です。通常は -99.99 ～ 99.99 の範囲で指定します。                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 曝露時間                       | 露出時間（秒単位）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| F番号                          | F値（F値とも呼ばれる）は、レンズの焦点距離と絞り径の比率です。AdobeのカメラのF値とは何ですか?詳細については、こちらをご覧ください。                                                                                                                                                                                                                                                                                                                                                              |
+| フラッシュ                     | このタグは、画像が撮影されたときのフラッシュの状態を示します。ビット 0 はフラッシュの発光状態、ビット 1 と 2 はフラッシュの復帰状態、ビット 3 と 4 はフラッシュ モード、ビット 5 はフラッシュ機能の有無、ビット 6 は「赤目」モードを示します。                                                                                                                                                                                                                             |
+| 焦点距離                       | レンズの実際の焦点距離（mm）。35 mm フィルム カメラの焦点距離への変換は行われません。                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 写真感度                       | このタグは、画像を撮影した際のカメラまたは入力デバイスの感度を示します。ISO 12232 で規定されているパラメータである標準出力感度 (SOS)、推奨露出指数 (REI)、ISO 感度のいずれかの値を示します。このタグを記録する場合は、SensitivityType タグも記録してください。また、Count = Any の場合、このタグを記録する場合は 1 カウントのみを使用してください。このタグは、バージョン 2.21 までは「ISOSpeedRatings」と呼ばれていました。 |
+| 測光モード                     | 測光モード。デフォルト = 0。0 = 不明。1 = 平均。2 = 中央加重平均。3 = スポット。4 = マルチスポット。5 = パターン。6 = 部分的。255 = その他。その他 = 予約済み。                                                                                                                                                                                                                                                                                                                             |
+| シャッタースピード値           | シャッタースピード。単位はAPEX値です。                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
-# 表示マトリックスの形式と導出
+
+### 表示マトリックスの形式と導出
 
 表示マトリックス形式と導出
 表示マトリックスは、デバイスの画面にレンダリングされる CPU 側の画像をマップします。つまり、CPU 側の画像テクスチャ座標をデバイスの画面座標にマップします。これは行優先であり、CPU 側の画像テクスチャ座標の y 軸反転が含まれます (y 軸反転なしでレンダリングすると、画像が上下逆になるため)。表示マトリックスは次のように定義されます。
@@ -1060,18 +1194,18 @@ y 軸を反転し、列優先の表示マトリックス D col を使用して�
 図 12. 図 10 で定義される「D 列 y 反転」と呼ばれる行列の転置は、y 軸を反転する行優先表示行列で、「D 行 y 反転」と呼ばれます。これは、図 1 で説明した行列と同じです。
 図12 - 結果、y軸を反転する行優先表示マトリックス
 
-# カスタム背景シェーダー
+### カスタム背景シェーダー
 
-カスタム背景シェーダー
+#### カスタム背景シェーダー
 XR デバイスの画面にレンダリングするカスタム背景シェーダーは、ディスプレイ マトリックスを使用して CPU 側のイメージ テクスチャ座標を変換します。ディスプレイ マトリックスの形式と導出については、このマニュアル ページを参照してください。
 
-XR 頂点シェーダー操作
+#### XR 頂点シェーダー操作
 頂点シェーダーは次の数学演算を実行します。ここで、「t i」は CPU 側画像のテクスチャ座標、「D」は表示マトリックス、「t d」は XR デバイスの画面のテクスチャ座標です。
 
 ベクトルと行列の乗算式。1 x 4 行ベクトルと 4 x 4 行列を掛け合わせると、別の 1 x 4 行ベクトルになります。最初の 1 x 4 行ベクトルの要素は、「ti dot x」、「ti dot y」、1、0 です。「t i」は画像のテクスチャ座標です。4 x 4 行列は、「D」と呼ばれる表示行列です。2 番目の 1 x 4 行ベクトルの要素は、「td dot x」、「td dot y」、1、0 です。「t_d」はデバイス画面のテクスチャ座標です。
 ディスプレイマトリックスと画像テクスチャ座標を使用して出力デバイス座標を見つける
 
-GLSLサンプルコード
+#### GLSLサンプルコード
 GLSL 頂点シェーダの場合、次の行はイメージ テクスチャ座標をデバイス画面座標に変換します。
 
 出力テクスチャ座標 = (vec4(gl_MultiTexCoord0.x, gl_MultiTexCoord0.y, 1.0f, 0.0f) * _UnityDisplayTransform).xy;
@@ -1079,7 +1213,7 @@ GLSL 頂点シェーダの場合、次の行はイメージ テクスチャ座�
 
 GLSL*演算子は、行列がベクトルで事前乗算されるときに行ベクトルを使用するようにオーバーロードされていることに注意してください。詳細については、このドキュメントを参照してください: https://en.wikibooks.org/wiki/GLSL_Programming/Vector_and_Matrix_Operations#Operators
 
-HLSL サンプルコード
+#### HLSL サンプルコード
 HLSL 頂点シェーダーの場合、次の行はイメージ テクスチャ座標をデバイス画面座標に変換します。
 
 出力テクスチャ座標 = mul(float3(v.texcoord, 1.0f), _UnityDisplayTransform).xy;
@@ -1087,30 +1221,29 @@ HLSL 頂点シェーダーの場合、次の行はイメージ テクスチャ�
 
 HLSL 関数は、mul()行列がベクトルで事前乗算されるときに行ベクトルを使用するようにオーバーロードされ、0行ベクトルの最後のインデックスなしで操作を実行します。これは、最終的な出力テクスチャ座標には必要ないためです。詳細については、次のドキュメントを参照してください: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-mul
 
-# Plane Detection
+## Plane Detection
 
 Plane Detectionとは、物理環境内の平面を検出してTrackingすることを指します。AR Plane Manager コンポーネントは、アプリ内の平面検出機能を制御し、ARPlane検出された平面ごとにTracking可能なものを作成します。
 
-AR Foundation 平面検出の使用方法については、次のトピックを参照してください。
-
-## プラットフォームサポート
+### プラットフォームサポート
 
 平面検出は、次の表に示すように、ARCore、ARKit、Meta OpenXR、XR Simulation プラットフォームでサポートされています。
 
 |プロバイダープラグイン	|平面検出をサポート	|プロバイダーのドキュメント|
 |---|---|---|
 |Google ARCore XR プラグイン |はい	|平面検出（ARCore）|
-|Apple ARKit XR プラグイン	|はい	|平面検出（ARキット）|
+|Apple ARKit XR プラグイン	|はい	|平面検出（ARKit）|
 |Apple visionOS XR プラグイン	|はい	|該当なし|
 |マイクロソフト ホロレンズ|
-|Unity OpenXR: メタ	|はい	|平面検出(メタOpenXR)|
+|Unity OpenXR: メタ	|はい	|平面検出(Meta OpenXR)|
 |XRシミュレーション	|はい	|該当なし|
 
-平面検出のサポートを確認する
+#### 平面検出のサポートを確認する
 アプリは、実行時にプロバイダー プラグインがユーザーのデバイスで平面検出をサポートしているかどうかを確認できます。これは主に、デバイスが平面検出をサポートしているかどうか不明な状況で役立ちます。これは、サードパーティのプロバイダー プラグインで AR Foundation を使用している場合に当てはまる可能性があります。
 
 以下のサンプル コードを使用して、デバイスが平面検出をサポートしているかどうかを確認します。
 
+```csharp
 void Start()
 {
     if (LoaderUtility
@@ -1120,25 +1253,30 @@ void Start()
         // XRPlaneSubsystem was loaded. The platform supports plane detection.
     }
 }
+```
 注記
 このサンプルコードでは、アプリがすでに XR を初期化していることを前提としています。
 
 デフォルトでは、アプリの起動時に XR が自動的に初期化されますが、これはプロジェクト設定> XR プラグイン管理>起動時に XR を初期化 で構成できます。XRプラグインのライフサイクル管理の詳細については、XR プラグイン管理のエンドユーザー ドキュメントを参照してください。
 
-オプション機能
+#### オプション機能
 平面検出プロバイダーは、以下の表に示すように、 AR Foundation のXRPlaneSubsystemのオプション機能のいずれかを実装するかどうかを選択できます。
 
-特徴	説明	ARCore	ARキット	メタOpenXR	XRシミュレーション
-水平面検出	プロバイダー実装が床などの水平面の検出をサポートしているかどうかを示します。	はい	はい	はい	はい
-垂直面検出	プロバイダー実装が壁などの垂直面の検出をサポートしているかどうかを示します。	はい	iOS 11.3以降	はい	はい
-任意の平面検出	プロバイダー実装が、水平軸にも垂直軸にも配置されていない平面の検出をサポートしているかどうかを示します。			はい	
-境界頂点	プロバイダー実装が平面の境界頂点をサポートしているかどうかを示します。	はい	はい	はい	はい
-分類	プロバイダ実装が値を提供できるかどうかを示しますARPlane.分類。		iOS 12以降	はい	
-オプション機能のサポートを確認する
+| 特徴               | 説明                                                                                 | ARCore | ARキット       | メタOpenXR | XRシミュレーション |
+|------|----------|--------|---------------|------------|-------|
+| 水平面検出         | 床などの水平面の検出をサポートしているかどうかを示します。         | はい   | はい          | はい       | はい               |
+| 垂直面検出         | 壁などの垂直面の検出をサポートしているかどうかを示します。         | はい   | iOS 11.3以降 | はい       | はい               |
+| 任意の平面検出     | 水平軸にも垂直軸にも配置されていない平面の検出をサポートしているかどうかを示します。 |        |               | はい       |                    |
+| 境界頂点           | 平面の境界頂点をサポートしているかどうかを示します。               | はい   | はい          | はい       | はい               |
+| 分類               | ARPlaneの分類結果を提供できるかどうかを示します               |        | iOS 12以降    | はい       |                    |
+	
+
+##### オプション機能のサポートを確認する
 アプリは、実行時に、平面検出プロバイダーがユーザーのデバイス上のオプション機能をサポートしているかどうかを確認できます。XRPlaneSubsystem記述子には、オプション機能ごとに、サポートされているかどうかを示すブール型プロパティが含まれています。
 
 オプション機能のサポートを確認する方法については、以下のサンプル コードを参照してください。
 
+```csharp
 void CheckForOptionalFeatureSupport()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -1152,29 +1290,30 @@ void CheckForOptionalFeatureSupport()
         // Classification is supported.
     }
 }
+```
 
-## AR Plane Manager Component
+### AR Plane Manager Component
 
-ARPlane Managerコンポーネントは、物理Environment内の平面を検出してTrackingするTracking可能なマネージャーの一種です。Tracking可能なマネージャーとして、検出された平面ごとにシーン内に GameObject を作成します。
+物理Environment内の平面を検出してTrackingするTracking可能なマネージャーの一種です。Tracking可能なマネージャーとして、検出された平面ごとにシーン内に GameObject を作成します。
 
-AR プレーン マネージャー コンポーネント
-AR プレーン マネージャー コンポーネント
+| 財産                   | 説明                                                                                                                                                       |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Tracking可能項目変更     | Tracking可能項目が変更されたとき (追加、更新、または削除されたとき) に呼び出されます。                                                                      |
+| PlanePrefab          | nullでない場合、このプレハブは検出された各平面に対してインスタンス化されます。プレハブにAR平面コンポーネント、ARPlaneManagerを1つ追加します。                    |
+| 検出モード               | 検出する飛行機の種類。次の4つのオプションがあります：  - なし  |
+|                        | - なし: 飛行機を検出できません。                                                                                                                         |
+|                        | - すべて: あらゆる配置の平面を検出できます。                                                                                                             |
+|                        | - 水平: 水平に揃った平面を検出できます。                                                                                                                 |
+|                        | - 垂直: 垂直に並んだ平面を検出できます。                                                                                                                 |
+|                        | - NotAxisAligned: 軸に沿っていない平面を検出できます。                                                                                                    |
 
-財産	説明
-Tracking可能項目変更	Tracking可能項目が変更されたとき (追加、更新、または削除されたとき) に呼び出されます。
-飛行機プレハブ	そうでない場合null、このプレハブは検出された各平面に対してインスタンス化されます。プレハブにAR 平面コンポーネント、ARPlaneManager1つ追加します。
-検出モード	検出する飛行機の種類。次の 4 つのオプションがあります。
-なし:飛行機を検出できません。
-すべて:あらゆる配置の平面を検出できます。
-水平:水平に揃った平面を検出できます。
-垂直:垂直に並んだ平面を検出できます
-NotAxisAligned:軸に沿っていない平面を検出できます。
-はじめる
+
+#### はじめる
 アプリで平面検出を有効にするには、XR Origin GameObject に AR Plane Manager コンポーネントを追加します。シーンに XR Origin GameObject が含まれていない場合は、まずシーンのセットアップ手順に従ってください。
 
 アプリで平面検出機能が必要ない場合は、AR Plane Manager コンポーネントを無効にして平面検出を無効にすると、アプリのパフォーマンスが向上します。ユーザーのデバイスが平面検出をサポートしていない場合、AR Plane Manager コンポーネントは実行中に自動的に無効になりますOnEnable。
 
-検出された飛行機に応答する
+#### 検出されたPlaneに応答する
 有効になっている場合、AR Plane Manager コンポーネントは、フレームごとにXRPlaneSubsystemによって報告される変更を取得します。プレーンが追加、更新、または削除された場合、関連する情報とともに、Tracking可能な変更イベントが呼び出されます。
 
 購読するには、trackablesChanged次の 2 つの方法があります。
@@ -1183,6 +1322,7 @@ NotAxisAligned:軸に沿っていない平面を検出できます。
 
 a.以下のサンプル コードに示すように、MonoBehaviorまたはに、 ARTrackables Changed Event Args<ARPlane>ScriptableObject型の単一のパラメータを持つパブリック メソッドを作成します。
 
+```csharp
 public void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARPlane> changes)
 {
     foreach (var plane in changes.added)
@@ -1200,6 +1340,7 @@ public void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARPlane> changes)
         // handle removed planes
     }
 }
+```
 b. XR Origin GameObject を選択し、AR Plane Manger コンポーネントのtrackablesChangedプロパティの追加 (+)ボタンをクリックします。
 
 c. オブジェクト ピッカー (⊙) を使用して、コンポーネントのインスタンスを含む GameObject または ScriptableObject のインスタンスのいずれか該当する方を選択します。
@@ -1215,6 +1356,7 @@ a.上記の手順 1a に示すように、ARTrackables Changed Event Args<ARPlan
 
 b. 以下のサンプル コードを使用してtrackablesChangedイベントをサブスクライブします。
 
+```csharp
 void SubscribeToPlanesChanged()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -1222,20 +1364,55 @@ void SubscribeToPlanesChanged()
 
     manager.trackablesChanged.AddListener(OnTrackablesChanged);
 }
-シーン内の平面を視覚化する
+```
+#### シーン内の平面を視覚化する
 デフォルトでは、AR 平面マネージャーは、平面が検出されてもシーンにテクスチャ メッシュをレンダリングしません。平面の視覚化を有効にするには、プレハブを AR 平面マネージャーの平面プレハブとして設定します。
 
-AR Foundation サンプルGitHub リポジトリには、開始時に使用できるプレハブが含まれています。
+#### AR Plane Debug Visualizer
+AR Foundation サンプルGitHub リポジトリに含まれているPrefab．平面メッシュを単色で視覚化し、オプションで平面のTracking可能なID、Tracking状態、分類、法線ベクトルなどを表示できる。視覚化オプションはPrefabのインスペクターから設定できる。
 
-プレハブ	説明
-AR プレーン デバッグ ビジュアライザー	平面メッシュを単色で視覚化し、オプションで平面のTracking可能なID、Tracking状態、分類、法線ベクトルなどがあります。視覚化オプションはインスペクターから設定できます。
+#### Custom Plane Visualizer
+シーンでプレーンを視覚化する一般的な方法としては、MeshFilterとMeshRenderer、LineRenderer、またはMeshColliderを使用する方法があります。Custom Visualizerでこれらのコンポーネントを 1 つ以上使用している場合は、Plane PrefabにARPlane Mesh Visualizerコンポーネントを追加して、Plane Mesh Dataを自動的に設定できます。
 
-カスタム平面ビジュアライザー
-プレーン プレハブで使用するための独自のカスタム プレーン ビジュアライザーを作成することもできます。シーンでプレーンを視覚化する一般的な方法としては、MeshFilterとMeshRenderer、LineRenderer、またはMeshColliderを使用する方法があります。カスタム ビジュアライザーでこれらのコンポーネントを 1 つ以上使用している場合は、プレーン プレハブにARPlane Mesh Visualizerコンポーネントを追加して、プレーン メッシュ データを自動的に設定できます。
+Custom Plane Visualizerが他のコンポーネントを使用してシーン内のプレーンをレンダリングする場合は、ARPlane をサブスクライブする必要があります。プレーン境界が変更されたときに更新を受信するように境界が変更されました。
 
-カスタム プレーン ビジュアライザーが他のコンポーネントを使用してシーン内のプレーンをレンダリングする場合は、ARPlane をサブスクライブする必要があります。プレーン境界が変更されたときに更新を受信するように境界が変更されました。
+### AR Plane Component
 
-## AR Plane Component
+AR 平面コンポーネント
+ARPlaneコンポーネントは、平面に関連付けられたデータを含むTracking可能なタイプのコンポーネントです。
+
+財産	説明
+除去時に破壊	の場合true、このTracking可能オブジェクトが削除されると、このコンポーネントの GameObject は破棄されます。
+頂点しきい値の変更	平面の頂点位置が変化する最大値。境界が変更されましたイベント。単位はメートルです。
+飛行機のライフサイクル
+Tracking可能な AR プレーンには、追加、更新、削除の 3 つのフェーズで構成されるライフサイクルがあります。アプリは、AR Plane Manger コンポーネントのイベントをサブスクライブすることで、AR Session中に検出されたプレーンに応答できます。trackablesChanged
+
+追加した
+飛行機が最初に検出されると、飛行機マネージャーは AR 飛行機コンポーネントがアタッチされた新しい GameObject を作成し、イベントを呼び出して、追加されたtrackablesChangedプロパティを介して新しい AR 飛行機コンポーネントへの参照を渡します。
+
+更新
+平面が追加された後の各フレームで、平面マネージャーはその平面の情報を更新する場合があります。ARCore や ARKit などのEnvironmentを継続的にスキャンするプラットフォームでは、通常、表面の検出が増えるにつれて平面は時間の経過とともに大きくなります。
+
+平面が更新されると、その境界頂点が変更されている可能性があります。これに対応するには、平面の境界変更イベントをサブスクライブします。は、境界頂点の位置が少なくとも 1 つ、頂点変更boundaryChangedしきい値以上変更された場合、または頂点の総数が変わった場合にのみ呼び出されます。
+
+平面の境界頂点が変更されると、更新された表面領域をより適切に反映するために、Transform コンポーネントの位置と回転も変更される可能性があります。アプリが平面に対して一貫した位置と回転で AR コンテンツをレンダリングするように設計されている場合は、その位置にアンカーを作成し、コンテンツのゲームオブジェクトをアンカー ゲームオブジェクトの親にする必要があります。これにより、平面の境界が時間の経過とともに変化しても、コンテンツが正しい位置に維持されます。
+
+Tracking状態
+飛行機がデバイスのカメラの視野から外れると、飛行機マネージャーはTracking状態を削除するのではなく、Tracking状態を制限に設定することがあります。制限の値は、飛行機マネージャーが飛行機を認識しているが、現在その位置をTrackingできないことを示します。
+
+アプリがプレーンのライフサイクル イベントに応答する場合は、trackingStateプレーンが更新されるたびに各プレーンの値を確認する必要があります。
+
+削除されました
+飛行機が検出されなくなった場合、飛行機マネージャーはそれを削除することがあります。削除された飛行機は更新できなくなります。削除された飛行機のDestroy on Removalプロパティが true に設定されている場合、飛行機マネージャーはtrackablesChangedイベントを呼び出した後すぐにそれを破棄します。
+
+平面が削除された場合、これはEnvironmentに表面が存在しなくなったことを示すのではなく、AR プラットフォームのEnvironmentの認識が変化し、その平面が無効になったことを示している可能性があります。
+
+一部のプラットフォームでは、平面が互いに包含し合う、つまりマージするという概念がサポートされています。1 つの平面が別の平面を包含する場合、その境界は、その平面の検出された表面領域を含むように拡張され、もう一方の平面は削除されます。AR プラットフォームがサポートしている場合、削除された平面の包含されたByプロパティには、その平面を包含した平面への参照が含まれることがあります。
+
+重要
+AR Plane コンポーネントまたはその GameObject を呼び出さないでくださいDestroy。AR プレーンは AR Plane Manager コンポーネントによって管理されており、自分で破棄するとエラーが発生する可能性があります。GameObject を無効にするか、代わりにプレーン メッシュをレンダリングしないことを検討してください。
+
+## Bounding Box Detection
 
 AR 平面コンポーネント
 ARPlaneコンポーネントは、平面に関連付けられたデータを含むTracking可能なタイプのコンポーネントです。
@@ -1274,46 +1451,7 @@ Tracking状態
 重要
 AR Plane コンポーネントまたはその GameObject を呼び出さないでくださいDestroy。AR プレーンは AR Plane Manager コンポーネントによって管理されており、自分で破棄するとエラーが発生する可能性があります。GameObject を無効にするか、代わりにプレーン メッシュをレンダリングしないことを検討してください。
 
-# Bounding Box Detection
-
-AR 平面コンポーネント
-ARPlaneコンポーネントは、平面に関連付けられたデータを含むTracking可能なタイプのコンポーネントです。
-
-AR 平面コンポーネント
-AR 平面コンポーネント
-
-財産	説明
-除去時に破壊	の場合true、このTracking可能オブジェクトが削除されると、このコンポーネントの GameObject は破棄されます。
-頂点しきい値の変更	平面の頂点位置が変化する最大値。境界が変更されましたイベント。単位はメートルです。
-飛行機のライフサイクル
-Tracking可能な AR プレーンには、追加、更新、削除の 3 つのフェーズで構成されるライフサイクルがあります。アプリは、AR Plane Manger コンポーネントのイベントをサブスクライブすることで、AR Session中に検出されたプレーンに応答できます。trackablesChanged
-
-追加した
-飛行機が最初に検出されると、飛行機マネージャーは AR 飛行機コンポーネントがアタッチされた新しい GameObject を作成し、イベントを呼び出して、追加されたtrackablesChangedプロパティを介して新しい AR 飛行機コンポーネントへの参照を渡します。
-
-更新
-平面が追加された後の各フレームで、平面マネージャーはその平面の情報を更新する場合があります。ARCore や ARKit などのEnvironmentを継続的にスキャンするプラットフォームでは、通常、表面の検出が増えるにつれて平面は時間の経過とともに大きくなります。
-
-平面が更新されると、その境界頂点が変更されている可能性があります。これに対応するには、平面の境界変更イベントをサブスクライブします。は、境界頂点の位置が少なくとも 1 つ、頂点変更boundaryChangedしきい値以上変更された場合、または頂点の総数が変わった場合にのみ呼び出されます。
-
-平面の境界頂点が変更されると、更新された表面領域をより適切に反映するために、Transform コンポーネントの位置と回転も変更される可能性があります。アプリが平面に対して一貫した位置と回転で AR コンテンツをレンダリングするように設計されている場合は、その位置にアンカーを作成し、コンテンツのゲームオブジェクトをアンカー ゲームオブジェクトの親にする必要があります。これにより、平面の境界が時間の経過とともに変化しても、コンテンツが正しい位置に維持されます。
-
-Tracking状態
-飛行機がデバイスのカメラの視野から外れると、飛行機マネージャーはTracking状態を削除するのではなく、Tracking状態を制限に設定することがあります。制限の値は、飛行機マネージャーが飛行機を認識しているが、現在その位置をTrackingできないことを示します。
-
-アプリがプレーンのライフサイクル イベントに応答する場合は、trackingStateプレーンが更新されるたびに各プレーンの値を確認する必要があります。
-
-削除されました
-飛行機が検出されなくなった場合、飛行機マネージャーはそれを削除することがあります。削除された飛行機は更新できなくなります。削除された飛行機のDestroy on Removalプロパティが true に設定されている場合、飛行機マネージャーはtrackablesChangedイベントを呼び出した後すぐにそれを破棄します。
-
-平面が削除された場合、これはEnvironmentに表面が存在しなくなったことを示すのではなく、AR プラットフォームのEnvironmentの認識が変化し、その平面が無効になったことを示している可能性があります。
-
-一部のプラットフォームでは、平面が互いに包含し合う、つまりマージするという概念がサポートされています。1 つの平面が別の平面を包含する場合、その境界は、その平面の検出された表面領域を含むように拡張され、もう一方の平面は削除されます。AR プラットフォームがサポートしている場合、削除された平面の包含されたByプロパティには、その平面を包含した平面への参照が含まれることがあります。
-
-重要
-AR Plane コンポーネントまたはその GameObject を呼び出さないでくださいDestroy。AR プレーンは AR Plane Manager コンポーネントによって管理されており、自分で破棄するとエラーが発生する可能性があります。GameObject を無効にするか、代わりにプレーン メッシュをレンダリングしないことを検討してください。
-
-## プラットフォームサポート
+### プラットフォームサポート
 
 境界ボックス検出プラットフォームのサポート
 境界ボックスの検出は、次の表に示すように、Meta OpenXR プラットフォームでのみサポートされています。
@@ -1330,6 +1468,7 @@ XRシミュレーション
 
 以下のサンプル コードを使用して、デバイスが境界ボックスの検出をサポートしているかどうかを確認します。
 
+```csharp
 void Start()
 {
     if (LoaderUtility
@@ -1339,6 +1478,7 @@ void Start()
         // XRBoundingBoxSubsystem was loaded. The platform supports bounding box detection.
     }
 }
+```
 オプション機能
 境界ボックス検出プロバイダーは、次の表に示すように、 AR Foundation のXRBounding Box Subsystemのオプション機能を実装するかどうかを選択できます。
 
@@ -1349,6 +1489,7 @@ void Start()
 
 オプション機能のサポートを確認する方法については、以下のサンプル コードを参照してください。
 
+```csharp
 void CheckForOptionalFeatureSupport()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -1361,10 +1502,10 @@ void CheckForOptionalFeatureSupport()
         // Classification is supported.
     }
 }
+```
 
-## AR Bounding Box Manager Component
+### AR Bounding Box Manager Component
 
-AR バウンディング ボックス マネージャー コンポーネント
 ARBounding Box Managerコンポーネントは、物理Environment内の 3D 境界ボックスを検出してTrackingするTracking可能なマネージャーの一種です。Tracking可能なマネージャーとして、検出された 3D 境界ボックスごとにシーン内に GameObject を作成します。
 
 AR バウンディング ボックス マネージャー コンポーネント
@@ -1386,7 +1527,7 @@ trackablesChangedインスペクター ウィンドウまたは C# スクリプ�
 インスペクターを使用する
 以下のサンプル コードに示すように、MonoBehaviourまたはに、 ARTrackables Changed Event Args<ARBounding Box>ScriptableObject型の単一パラメータを持つパブリック メソッドを作成します。
 
-'''C#
+```csharp
 public void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARBoundingBox> changes)
 {
     foreach (var boundingBox in changes.added)
@@ -1404,7 +1545,8 @@ public void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARBoundingBox> chan
         // handle removed bounding boxes
     }
 }
-'''
+```
+
 XR Origin GameObject を選択し、AR Bounding Box Manager コンポーネントのtrackablesChangedプロパティの追加 (+)ボタンをクリックします。
 
 オブジェクト ピッカー (⊙) を使用して、コンポーネントのインスタンスを含む GameObject または ScriptableObject のインスタンスのいずれか該当するものを選択します。
@@ -1435,9 +1577,8 @@ AR バウンディング ボックス デバッグ ビジュアライザー	境�
 カスタム境界ボックスビジュアライザー
 また、バウンディング ボックス プレハブで使用するための独自のカスタム バウンディング ボックス ビジュアライザーを作成することもできます。シーン内でバウンディング ボックスを視覚化する一般的な方法としては、MeshFilterとMeshRenderer、またはMeshCollider を使用する方法があります。
 
-## AR Bounding Box Component
+### AR Bounding Box Component
 
-AR バウンディング ボックス コンポーネント
 ARBounding Boxコンポーネントは、 3D 境界ボックスに関連付けられたデータを含むTracking可能なタイプの 1 つです。
 
 AR バウンディング ボックス コンポーネント
@@ -1465,13 +1606,12 @@ Tracking状態
 重要
 AR バウンディング ボックス コンポーネントまたはその GameObject を呼び出さないでくださいDestroy。AR バウンディング ボックスは AR バウンディング ボックス マネージャー コンポーネントによって管理されており、自分で破棄するとエラーが発生する可能性があります。代わりに GameObject を無効にするか、バウンディング ボックス メッシュをレンダリングしないことを検討してください。
 
-## AR Image Manager Component
+### Image Tracking
 
-AR Tracking画像マネージャ コンポーネント
+#### AR Image Manager Component
+
 Tracking画像マネージャーはTracking可能なマネージャーの一種であり、2D 画像Trackingを実行します。
 
-AR Tracking画像マネージャ コンポーネント
-AR Tracking画像マネージャ コンポーネント
 
 Tracking画像マネージャーは、Environment内で検出された画像ごとにゲームオブジェクトを作成します。画像を検出する前に、参照画像ライブラリにコンパイルされた参照画像のセットを検索するようにマネージャーに指示する必要があります。このライブラリ内の画像のみが検出されます。
 
@@ -1517,6 +1657,7 @@ AssetBundleXRReferenceImageLibraryにを含めるには、AR Foundation では�
 
 参照画像ライブラリを含む AssetBundle を構築する方法については、以下のコード サンプルを参照してください。
 
+```csharp
 static void ExportAssetBundles(string directoryPath, BuildTarget buildTarget)
 {
     UnityEditor.XR.ARSubsystems.ARBuildProcessor.PreprocessBuild(buildTarget);
@@ -1525,6 +1666,7 @@ static void ExportAssetBundles(string directoryPath, BuildTarget buildTarget)
         BuildAssetBundleOptions.ForceRebuildAssetBundle,
         buildTarget);
 }
+```
 AssetBundles のビルドウィンドウ
 または、メニュー オプションのAssets > AR Foundation > Build AssetBundles...を使用して、選択したディレクトリに AssetBundles をエクスポートすることもできます。
 
@@ -1538,7 +1680,8 @@ AssetBundles のビルドウィンドウ
 アセットバンドルを構築する	選択したディレクトリに AssetBundle をビルドします。
 検出された画像に応答する
 画像が追加（つまり、最初に検出）、更新、または削除されるたびに通知を受け取るには、ARTrackedImageManager のtrackables Changedイベントをサブスクライブします。
-
+  
+  ```csharp
 [SerializeField]
 ARTrackedImageManager m_TrackedImageManager;
 
@@ -1563,10 +1706,11 @@ void OnChanged(ARTrackablesChangedEventArgs<ARTrackedImage> eventArgs)
         // Handle removed event
     }
 }
+```
 画像にはTracking状態もあり、Tracking品質に関する追加情報を提供できることに注意してください。たとえば、画像が視界から外れた場合、その画像は「削除」されないかもしれませんが、Tracking状態は変化する可能性があります。
 
 ARTrackedImageManager のtrackablesプロパティを使用して、現在Trackingされているすべての画像を取得することもできます。これはIEnumerableコレクションのように動作するため、ステートメントで使用できますforeach。
-
+```csharp
 void ListAllImages()
 {
     Debug.Log(
@@ -1578,12 +1722,15 @@ void ListAllImages()
                   $"{trackedImage.transform.position}");
     }
 }
+```
 または、Tracking可能なIDで特定の画像にアクセスします。
 
+```csharp
 ARTrackedImage GetImageAt(TrackableId trackableId)
 {
     return m_TrackedImageManager.trackables[trackableId];
 }
+```
 Tracking画像プレハブ
 ARTracked Image Manager には「Tracked Image Prefab」フィールドがありますが、これはコンテンツ用ではありません。画像が検出されると、ARFoundation はそれを表す新しいゲームオブジェクトを作成します。
 
@@ -1594,6 +1741,8 @@ ARTracked Image Manager には「Tracked Image Prefab」フィールドがあり
 実行時に新しい参照画像を追加する
 一部のSubsystemは、実行時に変更可能なイメージ ライブラリをサポートする場合があります。この場合、SubsystemはRuntimeReferenceImageLibraryであるを生成します。これを使用するには、を にMutableRuntimeReferenceImageLibraryキャストする必要があります。RuntimeReferenceImageLibraryMutableRuntimeReferenceImageLibrary
 
+
+```csharp
 [SerializeField]
 ARTrackedImageManager m_TrackedImageManager;
 
@@ -1626,12 +1775,15 @@ void AddImage(Texture2D imageToAdd)
             0.5f /* 50 cm */);
     }
 }
+```
 特定のTrackingイメージ マネージャーが記述子を使用して変更可能なライブラリをサポートしているかどうかを確認できます。
 
+```csharp
 bool DoesSupportMutableImageLibraries()
 {
     return m_TrackedImageManager.descriptor.supportsMutableLibrary;
 }
+```
 変更可能なライブラリには、いつでも画像を追加できます。画像の追加には計算リソースが大量に消費され、完了するまでに数フレームかかる場合があります。Unity Job System は、画像を非同期的に処理するために使用されます。
 
 イメージを可変ランタイム参照イメージライブラリに追加するには、Schedule Add Image Jobメソッドを使用します。これにより、ジョブが完了したかどうかを判断するために使用できるジョブハンドルが返されます。これを行う必要がない場合は、このハンドルを安全に破棄できます。
@@ -1640,6 +1792,7 @@ Texture2D を受け入れる拡張メソッドを使用する場合は、メモ�
 
 ネイティブスライスまたはポインターを受け入れるSchedule Add Image Job Implのバージョンを使用する場合は、メモリの管理、つまりジョブの完了時にメモリを解放する責任があります。これは、メモリを解放する依存ジョブをスケジュールすることで実行できます。
 
+```csharp
 struct DeallocateJob : IJob
 {
     [DeallocateOnJobCompletion]
@@ -1682,6 +1835,7 @@ void AddImage(NativeArray<byte> grayscaleImageBytes,
         grayscaleImageBytes.Dispose();
     }
 }
+```
 複数の画像追加ジョブを同時に処理できます。画像Trackingに現在使用されているかどうかは、MutableRuntimeReferenceImageLibraryこれに影響しません。
 
 参照画像とテクスチャのインポート設定
@@ -1724,14 +1878,15 @@ Tracking	基盤となる AR SDK は、画像をアクティブにTrackingして�
 
 この情報がアプリケーションにとって重要な場合は、ARTrackedImageの変換とカメラのビュー フラスタムを比較することを検討してください。
 
-## AR Tracking Manager Component
+### Object Tracking
+
+#### AR Tracking Manager Component
 
 
 AR Trackingオブジェクト マネージャー コンポーネント
 ARTracked Object Managerコンポーネントは、Tracking可能なマネージャーの一種です。
 
-AR Trackingオブジェクト マネージャー コンポーネント
-AR Trackingオブジェクト マネージャー コンポーネント
+AR Trackingオブジェクト マネージャー コンポーネン
 
 Trackingオブジェクト マネージャーは、Environment内で検出されたオブジェクトごとに GameObject を作成します。現実世界のオブジェクトを検出する前に、そのオブジェクトをスキャンして参照オブジェクトを作成する必要があります。その後、参照オブジェクトを、Trackingオブジェクト マネージャーの参照オブジェクト ライブラリに追加できます。
 
@@ -1779,33 +1934,38 @@ GetComponent<ARTrackedObjectManager>().referenceLibrary.Add(referenceObject);
 
 実行時にARTrackedオブジェクトマネージャーを追加するには、その参照オブジェクト ライブラリを設定してから再度有効にします。
 
+```csharp
 var manager = gameObject.AddComponent<ARTrackedObjectManager>();
 manager.referenceLibrary = myLibrary;
 manager.enabled = true;
+```
 Tracking対象オブジェクトのプレハブ
 このプレハブは、参照オブジェクト ライブラリからオブジェクトが検出されるたびにインスタンス化されます。マネージャーは、インスタンス化された GameObject にコンポーネントが含まれていることを確認します。プロパティを使用ARTrackedObjectして、検出に使用された参照オブジェクトを取得できます。ARTrackedObjectARTrackedObject.referenceObject
 
-# Face Tracking 
+## Face Tracking 
 
 顔Tracking機能を使用すると、アプリは複合現実シーンで人間の顔を検出してTrackingできます。AR Face Managerコンポーネントは、アプリの顔Tracking機能を制御し、検出された顔ごとにARFaceTracking可能オブジェクトを作成します。
 
 AR Foundation での顔Trackingの詳細については、次のトピックを参照してください。
 
-## プラットフォームのサポート
+### プラットフォームのサポート
 
 顔Trackingプラットフォームのサポート
 AR Foundation XRFaceSubsystemは、次の表に示すように、ARCore および ARKit プラットフォームでサポートされています。
 
-プロバイダープラグイン	顔Trackingをサポート	プロバイダーのドキュメント
-Google ARCore XR プラグイン	はい	顔Tracking（ARCore）
-Apple ARKit XR プラグイン	はい	顔Tracking（ARキット）
-Apple visionOS XR プラグイン		
-マイクロソフト ホロレンズ		
-Unity OpenXR: メタ		
-XRシミュレーション		
-顔Trackingのサポートを確認する
+|プロバイダープラグイン	|顔Trackingをサポート	|プロバイダーのドキュメント|
+|---|---|---|
+|Google ARCore XR プラグイン	|はい	|顔Tracking（ARCore）https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.0/manual/features/face-tracking.html|
+|Apple ARKit XR プラグイン	|はい	|顔Tracking（ARキット）https://docs.unity3d.com/Packages/com.unity.xr.arkit@6.0/manual/arkit-face-tracking.html|
+|Apple visionOS XR プラグイン|		|
+|マイクロソフト ホロレンズ|		|
+|Unity OpenXR: メタ|		|
+|XRシミュレーション|		|
+
+#### 顔Trackingのサポートを確認する
 アプリは実行時に、プロバイダー プラグインがユーザーのデバイスで顔Trackingをサポートしているかどうかを確認できます。デバイスが顔コンポーネントをサポートしているかどうかを確認するには、次のサンプル コードを使用します。
 
+```csharp
 void Start()
 {
     if (LoaderUtility
@@ -1815,35 +1975,40 @@ void Start()
         // XRFaceSubsystem was loaded. The platform supports face detection.
     }
 }
+```
 注記
 このサンプルコードでは、アプリがすでに XR を初期化していることを前提としています。
 
 デフォルトでは、アプリの起動時に XR が自動的に初期化されますが、これはプロジェクト設定> XR プラグイン管理>起動時に XR を初期化 で構成できます。XRプラグインのライフサイクル管理の詳細については、XR プラグイン管理のエンドユーザー ドキュメントを参照してください。
 
-オプション機能
+#### オプション機能
 次の表は、フェイス Subsystemのオプション機能の一覧です。各オプション機能は、XRFaceSubsystem記述子の記述子プロパティによって定義され、実行時に確認することで機能がサポートされているかどうかを判断できます。機能がサポートされているかどうかを確認するコード例については、「オプション機能のサポートを確認する」を参照してください。
 
-特徴	記述子プロパティ	説明
-フェイスポーズ	フェイスポーズをサポート	SubsystemがPose検出された顔ごとに を生成できるかどうか。
-面メッシュの頂点とインデックス	面メッシュの頂点とインデックスをサポート	Subsystemが面メッシュをサポートし、面メッシュを表す頂点と三角形のインデックスを生成できるかどうか。
-フェイスメッシュUV	フェイスメッシュUVをサポート	Subsystemが各面メッシュのテクスチャ座標をサポートするかどうか。
-面メッシュ法線	フェイスメッシュ法線をサポート	Subsystemが各面メッシュの法線をサポートするかどうか。
-視線Tracking	アイTrackingをサポート	Subsystemが検出された各顔の視線Trackingをサポートするかどうか。
-オプション機能プラットフォームサポート
+|特徴	|記述子プロパティ	|説明|
+|---|---|---|
+|フェイスポーズ	|supportsFacePose	|SubsystemがPose検出された顔ごとに を生成できるかどうか。
+|面メッシュの頂点とインデックス	|supportsFaceMeshVerticesAndIndices |Subsystemが面メッシュをサポートし、面メッシュを表す頂点と三角形のインデックスを生成できるかどうか。
+|フェイスメッシュUV	|supportsFaceMeshUVs |Subsystemが各面メッシュのテクスチャ座標をサポートするかどうか。
+|面メッシュ法線	|supportsFaceMeshNormals |Subsystemが各面メッシュの法線をサポートするかどうか。
+|視線Tracking	|supportsEyeTracking |Subsystemが検出された各顔の視線Trackingをサポートするかどうか。
+
+##### オプション機能プラットフォームサポート
 次の表は、特定の XR プラグイン プロバイダーが各オプション機能をサポートしているかどうかを示しています。
 
-特徴	ARCore	ARキット
-フェイスポーズ	はい	はい
-面メッシュの頂点とインデックス	はい	はい
-フェイスメッシュUV	はい	はい
-面メッシュ法線	はい	
-視線Tracking		はい
+|特徴	|ARCore	|ARキット|
+|---|---|---|
+|フェイスポーズ	|はい	|はい|
+|面メッシュの頂点とインデックス	|はい	|はい|
+|フェイスメッシュUV	|はい	|はい|
+|面メッシュ法線	|はい||	
+|視線Tracking	|	|はい|
 
-オプション機能のサポートを確認する
+##### オプション機能のサポートを確認する
 アプリは、実行時に顔Trackingプロバイダーがユーザーのデバイス上のオプション機能をサポートしているかどうかを確認できます。XRFaceSubsystem記述子には、オプション機能ごとに、サポートされているかどうかを示すブール型プロパティが含まれています。
 
 オプション機能のサポートを確認する方法については、次のサンプル コードを参照してください。
 
+```csharp
 void CheckForOptionalFeatureSupport()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -1857,14 +2022,11 @@ void CheckForOptionalFeatureSupport()
         // Face pose is supported.
     }
 }
+```
 
-## AR Face Manager Component
+### AR Face Manager Component
 
-AR フェイス マネージャー コンポーネント
 ARFace Managerコンポーネントは、物理Environment内で人間の顔を検出してTrackingするTracking可能なマネージャーの一種です。Tracking可能なマネージャーとして、AR Face Manager は検出された顔ごとにシーン内に GameObject を作成します。
-
-AR フェイス マネージャー コンポーネント
-AR フェイス マネージャー コンポーネント
 
 財産	説明
 Tracking可能項目が変更されました	Tracking可能項目が変更されたとき (追加、更新、または削除されたとき) に呼び出されます。
@@ -1886,6 +2048,7 @@ ARFace顔が検出されると、検出された顔に関するデータを含�
 
 a.次のコード例に示すように、MonoBehaviorまたは に、ARTrackables Changed Event Args<ARFace>ScriptableObject型の単一のパラメータを持つパブリック メソッドを作成します。
 
+```csharp
 public void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARFace> changes)
 {
     foreach (var face in changes.added)
@@ -1903,6 +2066,7 @@ public void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARFace> changes)
         // handle removed faces
     }
 }
+```
 b. XR Origin GameObject を選択し、AR Face Manger コンポーネントのtrackablesChangedプロパティの追加 (+)ボタンをクリックします。
 
 c. オブジェクト ピッカー (⊙) を使用して、コンポーネントのインスタンスを含む GameObject または ScriptableObject のインスタンスのいずれか該当する方を選択します。
@@ -1917,7 +2081,7 @@ C#スクリプトを使用する
 a.手順 1a に示すように、ARTrackables Changed Event Args<Face>型の単一のパラメータを持つパブリック メソッドを作成します。
 
 b. 次のサンプル コードを使用してtrackablesChangedイベントをサブスクライブします。
-
+```csharp
 void SubscribeToFacesChanged()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -1925,8 +2089,10 @@ void SubscribeToFacesChanged()
 
     manager.trackablesChanged.AddListener(OnTrackablesChanged);
 }
+```
 
-## AR Face Component
+
+### AR Face Component
 
 AR フェイスコンポーネント
 ARFaceコンポーネントは、検出された人間の顔に関連付けられたデータを含むTracking可能なタイプのコンポーネントです。ARFaceマネージャーは、 AR デバイスがEnvironment内で人間の顔を検出すると、AR Face を生成します。
@@ -1971,30 +2137,24 @@ AR Foundation サンプルGitHub リポジトリには、次の表に示すよ�
 カスタムフェイスビジュアライザー
 顔プレハブで使用するための独自のカスタム顔ビジュアライザーを作成することもできます。シーンで顔を視覚化する一般的な方法は、MeshFilterとMeshRenderer を使用することです。カスタム ビジュアライザーでこれらのコンポーネントを 1 つ以上使用している場合は、顔プレハブにARFace Mesh Visualizerコンポーネントを追加して、顔メッシュ データを自動的に設定できます。
 
-# BodyTracking
+## BodyTracking
 
-ボディTracking
 AR シーンでボディ Trackingを有効にするには、XR Origin にARHuman Body Managerコンポーネントを追加します。
 
-AR ヒューマンボディマネージャーコンポーネント
 ARHuman Body Managerコンポーネントを使用すると、AR シーンで人体のTrackingが可能になります。
 
-AR ヒューマンボディマネージャーコンポーネント
-AR ヒューマンボディマネージャーコンポーネント
+|Property|	説明|
+|---|---|
+|ポーズ2D	|検出された人体の 2D ポーズを推定するかどうか。|
+|ポーズ3D	|検出された人体の 3D ポーズを推定するかどうか。|
+|ポーズ3Dスケール推定	3D |人体スケールを推定するかどうか。|
+|人体プレハブ	|検出された人体の原点にインスタンス化するプレハブ。|
 
-財産	説明
-ポーズ2D	検出された人体の 2D ポーズを推定するかどうか。
-ポーズ3D	検出された人体の 3D ポーズを推定するかどうか。
-ポーズ3Dスケール推定	3D 人体スケールを推定するかどうか。
-人体プレハブ	検出された人体の原点にインスタンス化するプレハブ。
+## Point clouds
 
-# AR Point Cloud manager
+### AR Point Cloud manager
 
-AR ポイントクラウド マネージャー コンポーネント
 ポイント クラウド マネージャーは、Tracking可能なマネージャーの一種です。
-
-AR ポイントクラウド マネージャー コンポーネント
-AR ポイントクラウド マネージャー コンポーネント
 
 ポイント クラウド マネージャーは、特徴点のセットであるポイント クラウドを作成します。特徴点とは、デバイスが世界における位置を特定するために使用するポイント クラウド内の特定のポイントです。特徴点は通常、木製のテーブルの節など、デバイスがフレーム間でTrackingできるEnvironment内の注目すべき特徴です。
 
@@ -2002,23 +2162,23 @@ AR ポイントクラウド マネージャー コンポーネント
 
 ポイント クラウドはTracking可能と見なされますが、個々の特徴点はTracking可能ではありません。ただし、特徴点には一意の識別子があるため、フレーム間で一意に識別できます。
 
-特徴点のプロパティ
+#### 特徴点のプロパティ
 各特徴点には位置があり、オプションで識別子と信頼度値があります。これらはそれぞれVector3、ulong、の並列配列として保存されます。float
 
-位置
+##### 位置
 各フィーチャ ポイントには 3D 位置があり、Session空間で報告されます。ARPoint Cloudを介して位置にアクセスできます。位置。
 
-識別子
+##### 識別子
 各フィーチャ ポイントには、 として表される一意の識別子を設定できます。識別子には、 ARPoint Cloudulongからアクセスできます。識別子。
 
 この配列は と並列ですpositions。この機能はプロバイダーによって異なります。 を確認してくださいARPointCloudManager.descriptor。
 
-信頼値
+##### 信頼値
 特徴点には信頼度値も設定でき、float0..1 の範囲で s として表されます。信頼度値にはARPoint Cloud からアクセスできます。信頼度値。
 
 この配列は と並列ですpositions。この機能はプロバイダーによって異なります。SubsystemDescriptor( ARPointCloud.descriptor) を確認してください。
 
-# Raycast
+## Raycast
 
 AR Foundation Raycast API を使用すると、プラットフォームはレイをキャストし、そのレイと物理Environmentで検出されたTracking可能オブジェクトとの交差を計算できます。この API を使用すると、シーン内でこれらのTracking可能オブジェクトを表す必要なく、特定のTracking可能オブジェクト タイプに対してレイをキャストできます。レイ キャストでヒットできるTracking可能オブジェクト タイプは、ターゲット プラットフォームでサポートされているTracking可能オブジェクトによって異なります。
 
@@ -2031,7 +2191,7 @@ AR Foundation レイ キャスティングの使用方法を理解するには�
 AR レイキャスト マネージャー コンポーネント	AR Raycast Manager コンポーネントと、それが提供するレイキャスト方法の種類を理解します。
 AR レイキャスト コンポーネント	AR Raycast コンポーネントを理解します。
 
-## プラットフォームサポート
+### プラットフォームサポート
 
 AR Foundation XRRaycastSubsystemは、次の表に示すように、ARCore、ARKit、Microsoft HoloLens、Meta OpenXR、XR Simulation プラットフォームでサポートされています。
 
@@ -2045,6 +2205,7 @@ XRシミュレーション	はい	レイキャスト（XRシミュレーショ�
 レイキャスティングのサポートを確認する
 アプリは実行時に、プロバイダー プラグインがユーザーのデバイスでレイ キャスティングをサポートしているかどうかを確認できます。デバイスがレイ キャスティングをサポートしているかどうかを確認するには、次のサンプル コードを使用します。
 
+```csharp
 void Start()
 {
     if (LoaderUtility
@@ -2054,6 +2215,7 @@ void Start()
         // XRRaycastSubsystem was loaded. The platform supports ray casts.
     }
 }
+```
 注記
 このサンプルコードでは、アプリがすでに XR を初期化していることを前提としています。
 
@@ -2111,7 +2273,7 @@ void CheckForOptionalFeatureSupport()
     }
 }
 
-## AR Raycast Manager Component
+### AR Raycast Manager Component
 
 ARRaycastマネージャーは、アプリ内でレイキャストを実行するTracking可能なマネージャーの一種です。
 
@@ -2135,7 +2297,7 @@ Trackingされたレイキャスト	AR Session全体にわたって、または�
 レイキャストのサンプルシーン
 AR Foundation サンプルGitHub リポジトリのSimple AR シーンには、平面に対してレイ キャスティング機能を使用するサンプル シーンが用意されています。このサンプル シーンの構成を使用して、プロジェクトでレイ キャスティングを開始できます
 
-## 単一光線の投射
+### 単一光線の投射
 
 単一レイ キャストは 1 回発生します。単一レイ キャストは、Environmentとの個別の 1 回限りのユーザー インタラクションに使用します。たとえば、検出された表面に仮想オブジェクトを配置して、ユーザーの部屋でどのように見えるかをプレビューします。
 
@@ -2153,6 +2315,7 @@ public bool Raycast(
     TrackableType trackableTypes = TrackableType.AllTypes)
 たとえば、タッチ位置を直接渡すことができます。
 
+```csharp
 [SerializeField]
 ARRaycastManager m_RaycastManager;
 
@@ -2168,6 +2331,7 @@ void Update()
         // Only returns true if there is at least one hit
     }
 }
+```
 ワールドベースのレイキャスト
 ワールドベースのRaycastメソッドは、任意のRay (位置と方向) を取得します。
 
@@ -2186,6 +2350,7 @@ trackableType	(オプション) キャストするTracking対象の種類。
 
 ヒットタイプを使用して、レイ キャストがどのようなものにヒットしたかを判断します。平面などのTracking可能なものにヒットした場合、ARRaycast Hit.trackableプロパティをそのタイプのTracking可能なものにキャストできます。
 
+```csharp
 void HandleRaycast(ARRaycastHit hit)
 {
     if (hit.trackable is ARPlane plane)
@@ -2199,8 +2364,9 @@ void HandleRaycast(ARRaycastHit hit)
         Debug.Log($"Raycast hit a {hit.hitType}");
     }
 }
+```
 
-## Trackingされたレイキャスト
+### Trackingされたレイキャスト
 
 Trackingされた (または永続的な) レイ キャストは、画面上の 2 次元のピクセル位置 (画面ポイント) からレイを継続的に投影します。Trackingされたレイ キャストにより、ユーザーは物理Environmentと継続的に対話できます。これにより、時間の経過やユーザーの位置を基準とした物理Environmentの理解に依存する機能を実装できます。たとえば、ユーザーが検出された壁 (平面) に仮想のスプレー ペイントを塗るアプリでTrackingされたレイ キャストを使用できます。Trackingされたレイ キャストは、ユーザーがペイントを狙っている場所を継続的にTrackingし、スプレーされたペイントが物理Environmentの壁に当たるタイミングを判断します。
 
@@ -2269,7 +2435,7 @@ Remove Raycastメソッドを使用して、削除したいを渡すこともで
 レイキャストを視覚化する
 新しいARRaycastを作成すると、AR Foundation は AR Raycast コンポーネントを含む新しい GameObject を作成します。デフォルトでは、AR Raycast Manager はレイキャストの視覚化をレンダリングしません。オプションで、 AR Raycast Manager のRaycast Prefabフィールドにプレハブを指定して、それぞれに対してインスタンス化しARRaycast、デフォルトの動作を拡張することができます。たとえば、それぞれに対して線を視覚化するカスタム プレハブを提供できますARRaycast。
 
-## AR Raycast Component
+### AR Raycast Component
 
 ARRaycastコンポーネントは、Trackingされたレイ キャストに関連付けられたデータを含むTracking可能なタイプの 1 つです。Trackingされたレイ キャストは、画面上の 2 次元のピクセル位置 (画面ポイント) からレイを継続的に投影します。
 
@@ -2296,9 +2462,9 @@ Tracking状態の値が「限定」の場合、Tracking対象のレイ キャス
 削除されました
 Remove Raycastメソッドを使用して、Trackingされたレイ キャストを手動で削除できます。レイ キャストを手動で削除する方法については、「レイキャストの削除」を参照してください。
 
-# Anchor
+## Anchor
 
-## Introduction
+### Introduction
 
 アンカーの紹介
 アンカーはTrackingされたポーズ(位置と回転) であり、これを使用すると、物理世界の既知の座標に複合現実コンテンツを配置できます。アンカーがないと、AR SessionのTracking状態が変化すると、シーン内のゲームオブジェクトが制御不能に動く可能性があります。
@@ -2355,7 +2521,7 @@ Trackingされた画像の位置と回転にアンカーを作成します。
 ポイントクラウドに対するレイキャスト
 AR Raycast Manager コンポーネントを使用してポイント クラウド内の特徴点に対してレイキャストできますが、個々の特徴点は Unity では Transform コンポーネントを持つ GameObject として表されません。したがって、特徴点のポーズで GameObject を固定するには、 ARRaycast Hitで返されるポーズでアンカーを作成します。
 
-## プラットフォームのサポート
+### プラットフォームのサポート
 
 アンカーは、次の表に示すように、ARCore、ARKit、HoloLens、Meta OpenXR、XR Simulation プラットフォームでサポートされています。
 
@@ -2371,6 +2537,7 @@ XRシミュレーション	はい	アンカー（XRシミュレーション）
 
 デバイスがアンカーをサポートしているかどうかを確認するには、次のサンプル コードを使用します。
 
+```csharp
 void Start()
 {
     if (LoaderUtility
@@ -2380,6 +2547,7 @@ void Start()
         // XRAnchorSubsystem was loaded. The platform supports anchors.
     }
 }
+```
 注記
 このサンプルコードでは、アプリがすでに XR を初期化していることを前提としています。
 
@@ -2415,6 +2583,7 @@ Tracking可能な添付ファイル	はい	はい			はい
 
 オプション機能のサポートを確認する方法については、次のサンプル コードを参照してください。
 
+```csharp
 void CheckForOptionalFeatureSupport()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -2428,8 +2597,9 @@ void CheckForOptionalFeatureSupport()
         // Trackable attachments are supported.
     }
 }
+```
 
-## AR Anchor Manager Component
+### AR Anchor Manager Component
 
 ARAnchor Managerコンポーネントは、アンカーをTrackingするTracking可能なマネージャーの一種です。Tracking可能なマネージャーとして、Trackingされたアンカーごとにシーン内に GameObject を作成します。
 
@@ -2451,6 +2621,7 @@ C# スクリプト — TryAddAnchorAsync (最も広くサポートされてい�
 
 アンカーをサポートするすべてのプラットフォームでは、次のコード例に示すように、C# async/await 構文を使用してTry Add Anchor Asyncを使用できます。
 
+```csharp
 async void CreateAnchorAsync()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -2467,10 +2638,12 @@ async void CreateAnchorAsync()
         // Do something with the newly created anchor.
     }
 }
+```
 C# スクリプト — AttachAnchor
 
 一部のプラットフォームでは、飛行機などの他のTracking対象にアンカーをアタッチする機能がサポートされています。次のコード サンプルは、サポートを確認してから、 Attach Anchorを使用して飛行機の表面上のポーズにアンカーをアタッチする方法を示しています。
 
+```csharp
 void AttachAnchor(ARAnchorManager manager, ARPlane plane, Pose pose)
 {
     if (manager.descriptor.supportsTrackableAttachments)
@@ -2479,6 +2652,8 @@ void AttachAnchor(ARAnchorManager manager, ARPlane plane, Pose pose)
         // Do something with the newly created anchor.
     }
 }
+```
+
 C# スクリプト — TryLoadAnchorAsync
 
 一部のプラットフォームでは、1 つの AR Sessionからアンカーを保存し、後続の AR Sessionで読み込む機能がサポートされています。詳細については、「永続的なアンカー」を参照してください。
@@ -2504,6 +2679,7 @@ trackablesChangedInspector または C# スクリプトを使用してサブス�
 
 a.次のサンプル コードに示すように、MonoBehaviourまたは に、ARTrackables Changed Event Args<ARAnchor>ScriptableObject型の単一のパラメーターを持つパブリック メソッドを作成します。
 
+```csharp
 public void OnTrackablesChanged(
     ARTrackablesChangedEventArgs<ARAnchor> changes)
 {
@@ -2522,6 +2698,7 @@ public void OnTrackablesChanged(
         // handle removed anchors
     }
 }
+```
 b. XR Origin GameObject を選択し、AR Anchor Manager コンポーネントのtrackables Changedプロパティにある [追加 (+)]ボタンをクリックします。
 
 c. オブジェクト ピッカー (⊙) を使用して、コンポーネントのインスタンスを含む GameObject または ScriptableObject のインスタンスのいずれか該当する方を選択します。
@@ -2536,7 +2713,7 @@ C#スクリプトを使用する
 a.前の手順 1a に示すように、ARTrackables Changed Event Args<ARAnchor>型の単一のパラメータを持つパブリック メソッドを作成します。
 
 b. 次のサンプル コードを使用してtrackablesChangedイベントをサブスクライブします。
-
+```csharp
 void SubscribeToAnchorsChanged()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -2544,6 +2721,7 @@ void SubscribeToAnchorsChanged()
 
     manager.trackablesChanged.AddListener(OnTrackablesChanged);
 }
+```
 アンカーを削除する
 AR アンカー マネージャー コンポーネントを有効にすると、次の 2 つの方法でアンカーを削除できます。
 
@@ -2563,7 +2741,7 @@ AR Foundation サンプルGitHub リポジトリには、開始するために�
 プレハブ	説明
 AR アンカー デバッグ ビジュアライザー	変換ギズモでアンカーを視覚化し、オプションでアンカーのTracking可能なID、SessionID、Tracking状態、アンカーが平面に接続されているかどうか。
 
-## AR Anchor Component
+### AR Anchor Component
 
 ARAnchorコンポーネントは、アンカーに関連付けられたデータを含むTracking可能なタイプの 1 つです。
 
@@ -2595,7 +2773,7 @@ Tracking状態
 削除されました
 アンカーは手動で削除できますが、アプリの実行中にユーザーが別の場所に移動した場合など、アンカーが無効になった場合に AR プラットフォームが自動的に削除することもできます。アンカーを自分で削除するには、「アンカーを削除する」を参照してください。
 
-## 永続的なアンカー
+### 永続的なアンカー
 
 AR Foundation 6 では、AR Sessionでアンカーを保存し、後続の AR Sessionで読み込むことができる永続アンカー用の API が導入されています。この API を使用すると、同じ物理空間内の複数のSessionにわたってアプリの状態を永続化できます。次のセクションでは、永続アンカー API の使用方法について説明します。
 
@@ -2623,6 +2801,7 @@ AR Foundation 永続アンカー API は、アンカー Subsystemの 5 つのオ
 
 アンカーを保存するには、次のコード例に示すようにARAnchorManager.TrySaveAnchorAsyncを使用します。
 
+```csharp
 async void TrySaveAnchorAsync(ARAnchor anchor)
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -2639,6 +2818,8 @@ async void TrySaveAnchorAsync(ARAnchor anchor)
     // to TryLoadAnchorAsync or TryEraseAnchorAsync
     SerializableGuid guid = result.value;
 }
+```
+
 重要
 によって返された永続的なアンカー GUID をTrackingしますTrySaveAnchorAsync。保存した永続的なアンカー GUID を紛失した場合、すべてのプラットフォームでその GUID を取得できるわけではありません。
 
@@ -2648,7 +2829,7 @@ AR Foundation サンプル GitHub リポジトリには、永続的なアンカ�
 ロード操作は、Save anchorによって返された永続アンカー GUIDを入力として受け取り、関連するアンカーを永続ストレージから取得して、新しく作成されたアンカーを返します。AR Anchor Manager コンポーネントの次の更新手順で、そのアンカーが追加されたと報告されます。
 
 次のサンプルコードは、アンカーをロードする方法を示しています。
-
+```csharp
 async void TryLoadAnchorAsync(SerializableGuid guid)
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -2664,6 +2845,7 @@ async void TryLoadAnchorAsync(SerializableGuid guid)
     // You can use this anchor as soon as it's returned to you.
     ARAnchor anchor = result.value;
 }
+```
 アンカーを消去
 消去操作は、Save anchorによって返された永続アンカー GUID を入力として受け取り、そのアンカーを永続ストレージから消去し、操作が成功したかどうかを示すステータスを返します。
 
@@ -2691,6 +2873,8 @@ async void TryEraseAnchorAsync(SerializableGuid guid)
 
 次のサンプル コードは、保存されたアンカー ID を取得する方法を示しています。
 
+```csharp
+
 async void TryGetSavedAnchorIdsAsync()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -2709,11 +2893,14 @@ async void TryGetSavedAnchorIdsAsync()
     // Do something with the saved anchor IDs
     NativeArray<SerializableGuid> anchorIds = result.value;
 }
+```
+
 非同期キャンセル
 AR Foundation の永続アンカー API は完全に非同期です。ターゲット プラットフォームが進行中の非同期操作をキャンセルする機能をサポートしている場合は、他の永続アンカー メソッドのCancellationToken入力パラメータを使用できます。それ以外の場合、キャンセルをサポートしていないプラットフォームではこの入力パラメータは無視されます。
 
 次のサンプルコードは、非同期操作をキャンセルする方法を示しています。
 
+```csharp
 void AsyncCancellation()
 {
     // This is inefficient. You should re-use a saved reference instead.
@@ -2728,8 +2915,11 @@ void AsyncCancellation()
     // Cancel the async operation before it completes
     cts.Cancel();
 }
+```
 
-## AR Mesh Manager Component
+## Meshing
+
+### AR Mesh Manager Component
 
 一部のプラットフォームでは、スキャンされた現実世界のジオメトリに基づいてメッシュを生成するメッシュ機能が提供されています。メッシュ マネージャーは、サポートされているプラ​​ットフォームでこの機能を有効にして構成します。
 
@@ -2783,7 +2973,7 @@ AR メッシュ マネージャー コンポーネント
 同時キューサイズ
 メインスレッドのブロックを回避するために、デバイスメッシュを Unity メッシュに変換し、物理衝突メッシュを作成するタスク (メッシュプレハブのGameObject にMesh Colliderコンポーネントが含まれている場合) は、バックグラウンドスレッドで処理されるジョブキューに移動されます。concurrent Queue Size は、同時に処理されるメッシュの数を指定します。
 
-# Environmentプローブ
+## Environmentプローブ
 
 Environmentプローブは、カメラから現実世界の画像をキャプチャし、その情報を、シーン内の特定のポイントからの全方向のビューを含むキューブ マップなどのEnvironmentテクスチャに整理します。このEnvironmentテクスチャを使用して 3D オブジェクトをレンダリングすると、レンダリングされたオブジェクトに現実世界の画像が反映され、現実世界のビューの影響を受けた仮想オブジェクトのリアルな反射と照明が作成されます。
 
@@ -2831,7 +3021,7 @@ AR Environmentプローブ マネージャー コンポーネント
 デバッグプレハブ
 このプレハブは、手動または自動で配置されたEnvironmentプローブごとにインスタンス化されます。これは必須ではありませんが、Unity はデバッグの目的でこれを提供します。
 
-# Occulusion
+## Occulusion
 
 オクルージョンを使用すると、アプリ内の複合現実コンテンツを物理Environment内のオブジェクトの背後に隠したり、部分的に隠したりすることができます。オクルージョンがない場合、シーン内のジオメトリは、深度の違いに関係なく、常に AR 背景内の物理オブジェクトの上にレンダリングされます。ARオクルージョン マネージャーコンポーネントは、アプリ内のオクルージョン機能を制御します。
 
@@ -2841,7 +3031,7 @@ AR Foundation オクルージョンの使用方法を理解するには、次の
 オクルージョンプラットフォームのサポート	どの AR プラットフォームがオクルージョン機能をサポートしているかを確認します。
 AR オクルージョン マネージャー コンポーネント	Occlusion Manager コンポーネントとサポートされている深度画像の種類を理解します。
 
-## プラットフォームのサポート
+### プラットフォームのサポート
 
 オクルージョンは、次の表に示すように、ARCore、ARKit、XR シミュレーション プラットフォームでサポートされています。
 
@@ -2857,6 +3047,7 @@ XRシミュレーション	はい	閉塞（XRシミュレーション）
 
 以下のサンプル コードを使用して、デバイスがオクルージョンをサポートしているかどうかを確認します。
 
+```csharp
 void Start()
 {
     if (LoaderUtility
@@ -2866,6 +3057,7 @@ void Start()
         // XROcclusionSubsystem was loaded. The platform supports occlusion.
     }
 }
+```
 注記
 このサンプルコードでは、アプリがすでに XR を初期化していることを前提としています。
 
@@ -2909,7 +3101,7 @@ void CheckForOptionalFeatureSupport()
     }
 }
 
-## AR Occlusion Manager Component
+### AR Occlusion Manager Component
 
 オクルージョン マネージャーは、深度またはステンシル画像を表すフレームごとの画像を公開します。深度画像をレンダリング プロセスに組み込むと、共有 AR 空間内で物理オブジェクトが背後にある仮想コンテンツを遮蔽することで、拡張コンテンツと現実世界のコンテンツのリアルな融合が実現します。
 
@@ -2951,7 +3143,9 @@ Environmentオクルージョンを優先する
 注記
 オクルージョン設定モードを使用して、ARKit で使用する深度画像の種類を選択します。人間のステンシル深度画像は ARKit でのみサポートされます。Environment画像と深度画像は同時に有効にされることはありません。
 
-## AR Participant Manager Component
+## Participant
+
+### AR Participant Manager Component
 
 参加者マネージャーはTracking可能なマネージャーの一種です。
 
@@ -3111,8 +3305,6 @@ Environmentを作る	デフォルトの XR シミュレーションEnvironment�
 XR Environmentオーバーレイ
 XR Environmentオーバーレイは、XR Environmentビューの動作を制御するツールバーオーバーレイです。
 
-XR Environmentオーバーレイ
-XR Environmentオーバーレイ
 
 XR Environmentビューを初めて開くと、XR Environmentオーバーレイと他のいくつかのオーバーレイがデフォルトで表示されますが、表示または非表示にするオーバーレイをカスタマイズできます。XR Environmentビューを使用するには XR Environmentオーバーレイのみが必要であり、追加のオーバーレイは好みに応じて表示または非表示にすることができます。オーバーレイのハンドル ( = )をクリックしてドラッグすることで、オーバーレイの位置を決めたりドッキングしたりすることもできます。
 
@@ -3130,9 +3322,6 @@ XR Environmentビューの右上隅にある⋮アイコンをクリックしま
 ## XR Simulation Project Settings
 
 プロジェクトのニーズに応じて XR シミュレーションのパフォーマンスを調整するには、 「編集」 > 「プロジェクト設定」 > 「XR プラグイン管理」 > 「XR シミュレーション」に移動します。XR シミュレーション プロジェクト設定は、 の Assets フォルダーに保存されますXR/Resources/XRSimulationRuntimeSettings.asset。
-
-XRシミュレーションプロジェクト設定
-XRシミュレーションプロジェクト設定
 
 設定	説明
 Environmentレイヤー	XRシミュレーションには専用の層XR シミュレーションEnvironmentをシーンとは別にレンダリングします。そのレイヤーはここで指定され、デフォルトではレイヤー 30 です。
@@ -3317,6 +3506,8 @@ X線領域コンポーネント
 ビュー境界	X 線クリッピング領域のサイズ。
 ヒント
 サンプルEnvironmentでは、X-Ray Region コンポーネントがアタッチされた GameObject はClippingRegionという名前になります。
+
+# ARシーンのデバック
 
 ## AR Foundaiton DebugMenu
 
